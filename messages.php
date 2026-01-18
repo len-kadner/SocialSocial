@@ -23,29 +23,48 @@ if ($_POST["message"] ?? false) {
     exit;
 }
 
-// Get conversations (users who sent or received messages)
-$conversations = $db->prepare("
-SELECT DISTINCT u.username, u.id,
-       (SELECT content FROM messages WHERE (sender_id = u.id AND receiver_id = ?) OR (sender_id = ? AND receiver_id = u.id) ORDER BY created_at DESC LIMIT 1) as last_message,
-       (SELECT created_at FROM messages WHERE (sender_id = u.id AND receiver_id = ?) OR (sender_id = ? AND receiver_id = u.id) ORDER BY created_at DESC LIMIT 1) as last_time
+// Get followers and following (mutual connections)
+$connections = $db->prepare("
+SELECT DISTINCT u.username, u.id
 FROM users u
-JOIN messages m ON (m.sender_id = u.id OR m.receiver_id = u.id)
+JOIN follows f ON (f.follower_id = u.id AND f.following_id = ?) OR (f.following_id = u.id AND f.follower_id = ?)
 WHERE u.id != ?
-ORDER BY last_time DESC
+ORDER BY u.username
 ");
-$conversations->execute([$userId, $userId, $userId, $userId, $userId]);
+$connections->execute([$userId, $userId, $userId]);
+
+// Filter by search query if provided
+$searchQuery = $_GET["search"] ?? "";
+$filteredConnections = [];
+foreach ($connections as $conn) {
+    if (empty($searchQuery) || stripos($conn["username"], $searchQuery) !== false) {
+        $filteredConnections[] = $conn;
+    }
+}
 
 $selectedUser = $_GET["user"] ?? null;
 $messages = [];
 if ($selectedUser) {
-    $messages = $db->prepare("
-    SELECT m.*, u.username as sender_name
-    FROM messages m
-    JOIN users u ON u.id = m.sender_id
-    WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
-    ORDER BY created_at ASC
-    ");
-    $messages->execute([$userId, $selectedUser, $selectedUser, $userId]);
+    // Check if selected user is a connection
+    $isConnection = false;
+    foreach ($filteredConnections as $c) {
+        if ($c["id"] == $selectedUser) {
+            $isConnection = true;
+            break;
+        }
+    }
+    if (!$isConnection) {
+        $selectedUser = null;
+    } else {
+        $messages = $db->prepare("
+        SELECT m.*, u.username as sender_name
+        FROM messages m
+        JOIN users u ON u.id = m.sender_id
+        WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)
+        ORDER BY created_at ASC
+        ");
+        $messages->execute([$userId, $selectedUser, $selectedUser, $userId]);
+    }
 }
 ?>
 
@@ -71,11 +90,14 @@ if ($selectedUser) {
 
         <div class="messages-container">
             <div class="conversations">
-                <h3>Conversations</h3>
-                <?php foreach ($conversations as $conv): ?>
-                <a href="?user=<?=$conv["id"]?>" class="conversation-item <?=$selectedUser == $conv["id"] ? 'active' : ''?>">
-                    @<?=htmlspecialchars($conv["username"])?>
-                    <div class="last-message"><?=htmlspecialchars(substr($conv["last_message"], 0, 50))?>...</div>
+                <h3>Chat with Connections</h3>
+                <form method="get" class="search-form">
+                    <input type="text" name="search" placeholder="Search followers..." value="<?=htmlspecialchars($searchQuery)?>">
+                    <button type="submit">Search</button>
+                </form>
+                <?php foreach ($filteredConnections as $conn): ?>
+                <a href="?user=<?=$conn["id"]?>&search=<?=urlencode($searchQuery)?>" class="conversation-item <?=$selectedUser == $conn["id"] ? 'active' : ''?>">
+                    @<?=htmlspecialchars($conn["username"])?>
                 </a>
                 <?php endforeach; ?>
             </div>
