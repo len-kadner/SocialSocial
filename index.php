@@ -5,11 +5,17 @@ require "auth.php";
 $userId = $_SESSION["user_id"];
 
 if ($_POST["post"] ?? false) {
+    if (!verifyCSRFToken($_POST['csrf_token'])) {
+        die('CSRF token mismatch');
+    }
     $stmt = $db->prepare("INSERT INTO posts (user_id, content) VALUES (?,?)");
     $stmt->execute([$userId, trim($_POST["post"])]);
 }
 
 if (isset($_POST["like"])) {
+    if (!verifyCSRFToken($_POST['csrf_token'])) {
+        die('CSRF token mismatch');
+    }
     $postId = $_POST["like"];
     $existing = $db->prepare("SELECT * FROM likes WHERE user_id = ? AND post_id = ?");
     $existing->execute([$userId, $postId]);
@@ -23,6 +29,9 @@ if (isset($_POST["like"])) {
 }
 
 if ($_POST["comment"] ?? false) {
+    if (!verifyCSRFToken($_POST['csrf_token'])) {
+        die('CSRF token mismatch');
+    }
     $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)");
     $stmt->execute([$_POST["post_id"], $userId, trim($_POST["comment"])]);
     header("Location: index.php");
@@ -55,11 +64,13 @@ $posts->execute([$userId, $userId]);
             <nav class="nav-links">
                 <a href="profile.php">My Profile</a>
                 <a href="search.php">Search</a>
+                <a href="messages.php">Messages</a>
                 <a href="logout.php">Logout</a>
             </nav>
         </header>
 
         <form method="post" class="post-form">
+            <input type="hidden" name="csrf_token" value="<?=generateCSRFToken()?>">
             <input name="post" placeholder="What's happening?" required>
             <button>Post</button>
         </form>
@@ -87,19 +98,18 @@ $posts->execute([$userId, $userId]);
             <div class="username">@<?=htmlspecialchars($p["username"])?></div>
             <div class="content"><?=htmlspecialchars($p["content"])?></div>
             <div class="post-actions">
-                <form method="post" style="display: inline;">
-                    <button type="submit" name="like" value="<?=$postId?>" class="like-btn <?=$isLiked ? 'liked' : ''?>">
-                        Like
-                    </button>
-                    <span class="like-count">(<?=$likeCount?>)</span>
-                </form>
+                <button type="button" onclick="likePost(<?=$postId?>, this)" class="like-btn <?=$isLiked ? 'liked' : ''?>">
+                    Like
+                </button>
+                <span class="like-count">(<?=$likeCount?>)</span>
                 <button class="comment-btn" onclick="toggleComments(<?=$postId?>)">Comment</button>
             </div>
             <div id="comments-<?=$postId?>" style="display: none;">
                 <form method="post" class="comment-form">
+                    <input type="hidden" name="csrf_token" value="<?=generateCSRFToken()?>">
                     <input name="comment" placeholder="Write a comment..." required>
                     <input type="hidden" name="post_id" value="<?=$postId?>">
-                    <button>Comment</button>
+                    <button id="comment-btn">Comment</button>
                 </form>
                 <?php foreach ($comments as $c): ?>
                 <div class="comment">
@@ -115,6 +125,31 @@ $posts->execute([$userId, $userId]);
         function toggleComments(postId) {
             const commentsDiv = document.getElementById('comments-' + postId);
             commentsDiv.style.display = commentsDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function likePost(postId, button) {
+            const formData = new FormData();
+            formData.append('like', postId);
+            formData.append('csrf_token', '<?=generateCSRFToken()?>');
+
+            fetch('index.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Update like count and button state
+                const likeCountSpan = button.nextElementSibling;
+                const currentCount = parseInt(likeCountSpan.textContent.match(/\d+/)[0]);
+                if (button.classList.contains('liked')) {
+                    button.classList.remove('liked');
+                    likeCountSpan.textContent = '(' + (currentCount - 1) + ')';
+                } else {
+                    button.classList.add('liked');
+                    likeCountSpan.textContent = '(' + (currentCount + 1) + ')';
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </body>

@@ -35,4 +35,12 @@ CREATE TABLE IF NOT EXISTS follows (
     following_id INTEGER,
     UNIQUE(follower_id, following_id)
 );
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender_id INTEGER,
+    receiver_id INTEGER,
+    content TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 ");

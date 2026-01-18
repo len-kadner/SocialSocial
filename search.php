@@ -26,6 +26,7 @@ if (isset($_GET["q"]) && !empty(trim($_GET["q"]))) {
             <nav class="nav-links">
                 <a href="index.php">Home</a>
                 <a href="profile.php">My Profile</a>
+                <a href="messages.php">Messages</a>
                 <a href="logout.php">Logout</a>
             </nav>
         </header>

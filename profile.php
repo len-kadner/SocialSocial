@@ -52,7 +52,7 @@ $posts->execute([$profileId]);
         <header>
             <h1>Social</h1>
             <nav class="nav-links">
-                <a href="index.php">Home</a>                <a href="search.php">Search</a>                <a href="logout.php">Logout</a>
+                <a href="index.php">Home</a>                <a href="search.php">Search</a>                <a href="messages.php">Messages</a>                <a href="logout.php">Logout</a>
             </nav>
         </header>
 
@@ -93,12 +93,10 @@ $posts->execute([$profileId]);
             <div class="username">@<?=htmlspecialchars($user["username"])?></div>
             <div class="content"><?=htmlspecialchars($p["content"])?></div>
             <div class="post-actions">
-                <form method="post" style="display: inline;" action="index.php">
-                    <button type="submit" name="like" value="<?=$postId?>" class="like-btn <?=$isLiked ? 'liked' : ''?>">
-                        Like
-                    </button>
-                    <span class="like-count">(<?=$likeCount?>)</span>
-                </form>
+                <button type="button" onclick="likePost(<?=$postId?>, this)" class="like-btn <?=$isLiked ? 'liked' : ''?>">
+                    Like
+                </button>
+                <span class="like-count">(<?=$likeCount?>)</span>
                 <button class="comment-btn" onclick="toggleComments(<?=$postId?>)">Comment</button>
             </div>
             <div id="comments-<?=$postId?>" style="display: none;">
@@ -123,6 +121,31 @@ $posts->execute([$profileId]);
         function toggleComments(postId) {
             const commentsDiv = document.getElementById('comments-' + postId);
             commentsDiv.style.display = commentsDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function likePost(postId, button) {
+            const formData = new FormData();
+            formData.append('like', postId);
+            formData.append('csrf_token', '<?=generateCSRFToken()?>');
+
+            fetch('index.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Update like count and button state
+                const likeCountSpan = button.nextElementSibling;
+                const currentCount = parseInt(likeCountSpan.textContent.match(/\d+/)[0]);
+                if (button.classList.contains('liked')) {
+                    button.classList.remove('liked');
+                    likeCountSpan.textContent = '(' + (currentCount - 1) + ')';
+                } else {
+                    button.classList.add('liked');
+                    likeCountSpan.textContent = '(' + (currentCount + 1) + ')';
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </body>

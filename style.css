@@ -359,3 +359,89 @@ form {
 .user-item a:hover {
     text-decoration: underline;
 }
+
+.messages-container {
+    display: flex;
+    gap: 20px;
+}
+
+.conversations {
+    flex: 1;
+    border-right: 1px solid #e0e0e0;
+    padding-right: 20px;
+}
+
+.conversation-item {
+    display: block;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: #000000;
+    background-color: #fafafa;
+}
+
+.conversation-item:hover, .conversation-item.active {
+    background-color: #f0f0f0;
+}
+
+.last-message {
+    font-size: 14px;
+    color: #666;
+}
+
+.chat {
+    flex: 2;
+}
+
+.chat-messages {
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #fafafa;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.message.sent {
+    background-color: #007bff;
+    color: white;
+    text-align: right;
+}
+
+.message.received {
+    background-color: #e9ecef;
+    color: #000;
+}
+
+.message-form {
+    display: flex;
+    gap: 10px;
+}
+
+.message-form input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+.message-form button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.message-form button:hover {
+    background-color: #0056b3;
+}
