@@ -471,3 +471,139 @@ form {
 .search-form button:hover {
     background-color: #0056b3;
 }
+/* =========================
+   Mobile Optimierung
+   ========================= */
+@media (max-width: 768px) {
+
+    .container {
+        padding: 15px;
+    }
+
+    /* Header */
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px 0;
+    }
+
+    header h1 {
+        font-size: 24px;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .nav-links a {
+        flex: 1;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 14px;
+    }
+
+    /* Suche */
+    .search-bar input {
+        max-width: 100%;
+        font-size: 15px;
+    }
+
+    /* Post Form */
+    .post-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .post-form input {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .post-form button {
+        width: 100%;
+        padding: 14px;
+    }
+
+    /* Posts */
+    .post {
+        padding: 15px;
+    }
+
+    .post .username {
+        font-size: 16px;
+    }
+
+    .post .content {
+        font-size: 15px;
+    }
+
+    .post-actions {
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .like-btn,
+    .comment-btn {
+        flex: 1;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    /* Kommentare */
+    .comment-form {
+        flex-direction: column;
+    }
+
+    .comment-form button {
+        width: 100%;
+    }
+
+    /* Login / Register */
+    .login-form,
+    .register-form {
+        margin: 40px 10px;
+        padding: 25px;
+    }
+
+    /* Profile */
+    .profile-header h2 {
+        font-size: 22px;
+    }
+
+    .profile-stats {
+        font-size: 14px;
+    }
+
+    .follow-btn {
+        width: 100%;
+    }
+
+    /* User List */
+    .user-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* Messages */
+    .messages-container {
+        flex-direction: column;
+    }
+
+    .conversations {
+        border-right: none;
+        padding-right: 0;
+        margin-bottom: 15px;
+    }
+
+    .chat-messages {
+        height: 300px;
+    }
+
+    .message-form button {
+        padding: 10px;
+    }
+}
