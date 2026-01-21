@@ -49,6 +49,11 @@ header h1 {
     background-color: #f0f0f0;
 }
 
+.nav-links a.active {
+    background-color: #000000;
+    color: #ffffff;
+}
+
 .search-bar {
     margin-bottom: 30px;
     text-align: center;
