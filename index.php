@@ -66,6 +66,7 @@ $posts->execute([$userId, $userId]);
 
         <form method="post" class="post-form">
             <input type="hidden" name="csrf_token" value="<?=generateCSRFToken()?>">
+            <input type="hidden" name="date" value="<?=date('H:i d.m.Y', strtotime($msg["created_at"]))?>">
             <input name="post" placeholder="What's happening?" required>
             <button>Post</button>
         </form>
@@ -92,6 +93,7 @@ $posts->execute([$userId, $userId]);
         <div class="post">
             <div class="username">@<?=htmlspecialchars($p["username"])?></div>
             <div class="content"><?=htmlspecialchars($p["content"])?></div>
+            <!-- <div class="date"><?php echo $_Post["date"]?></div> -->
             <div class="post-actions">
                 <button type="button" onclick="likePost(<?=$postId?>, this)" class="like-btn <?=$isLiked ? 'liked' : ''?>">
                     Like

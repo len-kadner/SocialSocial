@@ -8,10 +8,8 @@ A simple social media platform built with PHP, SQLite, and HTML/CSS.
 - Post creation, liking, and commenting
 - Follow/unfollow users
 - Private messaging
-- Profile management (change username, password, upload avatar)
-- Notifications for likes, comments, and follows
+- Profile management (password)
 - Search for users and posts
-- Forward posts to connections via messages
 - Trending posts based on engagement
 - Responsive design
 
