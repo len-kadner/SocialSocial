@@ -628,3 +628,9 @@ form {
 .timestamp{
    color:#666; 
 }
+.messages-container { display: flex; }  /* Nebeneinander */
+.conversations { flex: 1; padding: 10px; }  /* Links: 1 Teil */
+.chat { flex: 2; padding: 10px; border-left: 1px solid #ccc; }  /* Rechts: 2 Teile, mit Trennlinie */
+.message { margin: 10px 0; }
+.sent { text-align: right; }  /* Deine Nachrichten rechts */
+.received { text-align: left; }  /* Andere links */
