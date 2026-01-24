@@ -2,9 +2,9 @@
 require "db.php";
 session_start();
 
-if ($_POST) {
-    $stmt = $db->prepare("SELECT * FROM users WHERE username=?");
-    $stmt->execute([$_POST["username"]]);
+if ($_POST && isset($_POST["email"])) {
+    $stmt = $db->prepare("SELECT u.* FROM users u JOIN emails e ON u.id = e.id WHERE e.email = ?");
+    $stmt->execute([$_POST["email"]]);
     $u = $stmt->fetch();
 
     if ($u && password_verify($_POST["password"], $u["password"])) {
@@ -27,7 +27,7 @@ if ($_POST) {
     <div class="container">
         <form method="post" class="login-form">
             <h2>Login to Social</h2>
-            <input name="username" placeholder="Username" required>
+            <input name="email" placeholder="Email" required>
             <input name="password" type="password" placeholder="Password" required>
             <button>Login</button>
             <p>Don't have an Account? <a href="register.php">Register here</a></p>
