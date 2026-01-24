@@ -2,7 +2,6 @@
 $currentPage = basename($_SERVER['PHP_SELF']);
 $navItems = [
     'index.php' => 'Home',
-    'trending.php' => 'Trending',
     'search.php' => 'Search',
     'messages.php' => 'Messages',
     'profile.php' => 'My Profile'
